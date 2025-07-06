@@ -29,8 +29,8 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
     setTimeout(() => {
       if (!isLogin && formData.password !== formData.confirmPassword) {
         toast({
-          title: "Passwords don't match! 😅",
-          description: "Please make sure your passwords match sweetly! 💕",
+          title: "Passwords don't match!",
+          description: "Please make sure your passwords match.",
           variant: "destructive"
         });
         setIsLoading(false);
@@ -38,8 +38,8 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
       }
 
       toast({
-        title: isLogin ? "Welcome back, dear! 🌸" : "Welcome to OneSeed! 🎉",
-        description: isLogin ? "You've successfully signed in! ✨" : "Your account has been created with love! 💝",
+        title: isLogin ? "Welcome back!" : "Welcome to OneSeed!",
+        description: isLogin ? "You've successfully signed in!" : "Your account has been created!",
       });
 
       setIsLoading(false);
@@ -56,89 +56,85 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <Card className="w-full max-w-md border-4 border-pink-200 shadow-2xl bg-gradient-to-br from-pink-50 via-yellow-50 to-green-50 transform scale-100 animate-bounce-in">
+      <Card className="w-full max-w-md border border-pink-200 shadow-2xl bg-white">
         <CardHeader className="text-center relative">
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 text-gray-400 hover:text-pink-600 transform hover:scale-110 transition-all duration-300 bg-white rounded-full p-2 shadow-lg"
+            className="absolute right-4 top-4 text-gray-400 hover:text-pink-600 transform hover:scale-110 transition-all duration-300 bg-gray-100 rounded-full p-2"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
           
           <div className="flex justify-center items-center mb-4">
             <img 
               src="/lovable-uploads/b7b57ebd-3dcb-418e-adf2-c5af277e3125.png" 
-              alt="OneSeed Kawaii Logo" 
-              className="w-20 h-20 transform hover:scale-110 transition-transform duration-300"
+              alt="OneSeed Logo" 
+              className="w-16 h-16 transform hover:scale-110 transition-transform duration-300"
             />
           </div>
           
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-pink-600 via-purple-600 to-pink-700 bg-clip-text text-transparent mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-            {isLogin ? '🌸 Welcome Back! 🌸' : '✨ Join OneSeed! ✨'}
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-green-600 bg-clip-text text-transparent mb-2">
+            {isLogin ? 'Welcome Back!' : 'Join OneSeed!'}
           </CardTitle>
-          <p className="text-gray-600 text-lg" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-            {isLogin ? '💕 Continue your spiritual journey' : '🌱 Begin your spiritual growth adventure'}
+          <p className="text-gray-600">
+            {isLogin ? 'Continue your spiritual journey' : 'Begin your spiritual growth adventure'}
           </p>
         </CardHeader>
 
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-bold text-pink-700 mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>🌟 Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
                 <Input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter your lovely name ✨"
+                  placeholder="Enter your name"
                   required={!isLogin}
-                  className="border-3 border-pink-200 focus:border-pink-400 rounded-xl py-3 text-lg"
-                  style={{fontFamily: 'Comic Sans MS, cursive'}}
+                  className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-bold text-pink-700 mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>💌 Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
               <Input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleInputChange}
-                placeholder="Enter your email address 📧"
+                placeholder="Enter your email"
                 required
-                className="border-3 border-pink-200 focus:border-pink-400 rounded-xl py-3 text-lg"
-                style={{fontFamily: 'Comic Sans MS, cursive'}}
+                className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-pink-700 mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>🔐 Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
               <Input
                 type="password"
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                placeholder="Enter your secret password 🤫"
+                placeholder="Enter your password"
                 required
-                className="border-3 border-pink-200 focus:border-pink-400 rounded-xl py-3 text-lg"
-                style={{fontFamily: 'Comic Sans MS, cursive'}}
+                className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
               />
             </div>
 
             {!isLogin && (
               <div>
-                <label className="block text-sm font-bold text-pink-700 mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>🔐 Confirm Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                 <Input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  placeholder="Confirm your password sweetly 💕"
+                  placeholder="Confirm your password"
                   required={!isLogin}
-                  className="border-3 border-pink-200 focus:border-pink-400 rounded-xl py-3 text-lg"
-                  style={{fontFamily: 'Comic Sans MS, cursive'}}
+                  className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
                 />
               </div>
             )}
@@ -146,29 +142,27 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:from-pink-500 hover:via-pink-600 hover:to-pink-700 text-white py-4 text-lg rounded-xl shadow-xl transform hover:scale-105 transition-all duration-300 border-2 border-white/50"
-              style={{fontFamily: 'Comic Sans MS, cursive'}}
+              className="w-full bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-600 hover:to-green-600 text-white py-2 rounded-lg shadow-md transform hover:scale-105 transition-all duration-300"
             >
-              {isLoading ? '✨ Please wait... ✨' : (isLogin ? '🌸 Sign In 🌸' : '🌱 Create Account 🌱')}
+              {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-gray-600 text-lg" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-              {isLogin ? "Don't have an account? 🤔 " : "Already have an account? 😊 "}
+            <p className="text-gray-600">
+              {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-pink-600 hover:text-pink-700 font-bold underline transform hover:scale-105 transition-all duration-300"
-                style={{fontFamily: 'Comic Sans MS, cursive'}}
+                className="text-pink-600 hover:text-pink-700 font-medium underline transform hover:scale-105 transition-all duration-300"
               >
-                {isLogin ? '🌱 Sign up' : '🌸 Sign in'}
+                {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
           </div>
 
-          <div className="mt-6 pt-4 border-t-2 border-pink-200">
-            <p className="text-sm text-gray-500 text-center leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-              By continuing, you agree to grow in faith and fellowship with God through OneSeed! 🙏✨💕
+          <div className="mt-6 pt-4 border-t border-gray-200">
+            <p className="text-xs text-gray-500 text-center leading-relaxed">
+              By continuing, you agree to grow in faith and fellowship with God through OneSeed
             </p>
           </div>
         </CardContent>

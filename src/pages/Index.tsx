@@ -30,21 +30,20 @@ const Index = () => {
   const renderContent = () => {
     if (!isAuthenticated) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-yellow-50 to-green-50 relative overflow-hidden">
-          {/* Cute floating elements */}
-          <div className="absolute top-10 left-10 w-8 h-8 bg-pink-200 rounded-full opacity-60 animate-bounce" style={{animationDelay: '0s'}}></div>
-          <div className="absolute top-32 right-20 w-6 h-6 bg-yellow-200 rounded-full opacity-50 animate-bounce" style={{animationDelay: '0.5s'}}></div>
-          <div className="absolute bottom-20 left-32 w-4 h-4 bg-green-200 rounded-full opacity-40 animate-bounce" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-40 right-16 w-5 h-5 bg-purple-200 rounded-full opacity-45 animate-bounce" style={{animationDelay: '1.5s'}}></div>
+        <div className="min-h-screen bg-gradient-to-br from-white via-pink-50 to-green-50 relative overflow-hidden">
+          {/* Subtle floating elements */}
+          <div className="absolute top-10 left-10 w-4 h-4 bg-pink-200 rounded-full opacity-40 animate-pulse"></div>
+          <div className="absolute top-32 right-20 w-3 h-3 bg-green-200 rounded-full opacity-30 animate-pulse" style={{animationDelay: '0.5s'}}></div>
+          <div className="absolute bottom-20 left-32 w-2 h-2 bg-pink-300 rounded-full opacity-20 animate-pulse" style={{animationDelay: '1s'}}></div>
           
           <div className="container mx-auto px-4 py-8 relative z-10">
             <div className="text-center mb-12">
               <div className="flex justify-center items-center mb-6">
-                <div className="relative transform hover:scale-110 transition-transform duration-300">
+                <div className="relative transform hover:scale-105 transition-transform duration-300">
                   <img 
                     src="/lovable-uploads/b7b57ebd-3dcb-418e-adf2-c5af277e3125.png" 
-                    alt="OneSeed Kawaii Logo" 
-                    className="w-32 h-32 drop-shadow-lg"
+                    alt="OneSeed Logo" 
+                    className="w-24 h-24 drop-shadow-lg"
                   />
                 </div>
               </div>
@@ -53,74 +52,77 @@ const Index = () => {
                 <img 
                   src="/lovable-uploads/e7e9fca7-a81e-44cb-9616-f4c08cc421ff.png" 
                   alt="OneSeed 3D Title" 
-                  className="mx-auto max-w-md drop-shadow-2xl transform hover:scale-105 transition-transform duration-300"
+                  className="mx-auto max-w-md drop-shadow-xl transform hover:scale-105 transition-transform duration-300"
                 />
               </div>
               
-              <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto font-medium leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-                ✨ Nurture your spiritual growth through daily scripture, prayer, and reflection ✨
+              <p className="text-xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
+                Nurture your spiritual growth through daily scripture, prayer, and reflection
                 <br />
-                <span className="text-lg text-pink-600">🌱 Plant seeds of faith that will grow for eternity! 🌱</span>
+                <span className="text-lg bg-gradient-to-r from-pink-600 to-green-600 bg-clip-text text-transparent font-medium">
+                  Plant seeds of faith that will grow for eternity
+                </span>
               </p>
               
               <Button 
                 onClick={() => setShowAuthModal(true)}
-                className="bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:from-pink-500 hover:via-pink-600 hover:to-pink-700 text-white px-10 py-4 text-lg rounded-full shadow-xl transform hover:scale-110 transition-all duration-300 border-4 border-white/50"
-                style={{fontFamily: 'Comic Sans MS, cursive'}}
+                className="bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-600 hover:to-green-600 text-white px-8 py-3 text-lg rounded-lg shadow-lg transform hover:scale-105 transition-all duration-300"
               >
-                🌸 Begin Your Journey 🌸
+                Begin Your Journey
               </Button>
             </div>
 
             <div className="grid md:grid-cols-3 gap-8 mb-12">
-              <Card className="border-4 border-pink-200 shadow-xl bg-gradient-to-br from-blue-50 to-blue-100 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:rotate-1">
+              <Card className="border border-gray-200 shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:scale-102 group">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-blue-200 to-blue-300 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                    <BookOpen className="w-8 h-8 text-blue-700" />
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-green-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    <BookOpen className="w-8 h-8 text-white" />
                   </div>
-                  <CardTitle className="text-blue-800 text-xl" style={{fontFamily: 'Comic Sans MS, cursive'}}>📖 Daily Scripture</CardTitle>
+                  <CardTitle className="text-gray-800 text-xl">Daily Scripture</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 text-center leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-                    Start each day with God's word! 💝 Receive carefully selected verses that speak to your heart ✨
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Start each day with God's word. Receive carefully selected verses that speak to your heart
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="border-4 border-pink-200 shadow-xl bg-gradient-to-br from-purple-50 to-pink-100 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:-rotate-1">
+              <Card className="border border-gray-200 shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:scale-102 group">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-purple-200 to-pink-300 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                    <Heart className="w-8 h-8 text-purple-700" />
+                  <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    <Heart className="w-8 h-8 text-white" />
                   </div>
-                  <CardTitle className="text-purple-800 text-xl" style={{fontFamily: 'Comic Sans MS, cursive'}}>💕 Prayer Journal</CardTitle>
+                  <CardTitle className="text-gray-800 text-xl">Prayer Journal</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 text-center leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-                    Record your prayers and witness God's faithfulness! 🙏 Track answered prayers with joy 🌈
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Record your prayers and witness God's faithfulness. Track answered prayers with joy
                   </p>
                 </CardContent>
               </Card>
 
-              <Card className="border-4 border-pink-200 shadow-xl bg-gradient-to-br from-yellow-50 to-orange-100 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:scale-105 hover:rotate-1">
+              <Card className="border border-gray-200 shadow-lg bg-white hover:shadow-xl transition-all duration-300 transform hover:scale-102 group">
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-gradient-to-r from-yellow-200 to-orange-300 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-lg">
-                    <PenTool className="w-8 h-8 text-orange-700" />
+                  <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-400 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md group-hover:shadow-lg transition-shadow duration-300">
+                    <PenTool className="w-8 h-8 text-white" />
                   </div>
-                  <CardTitle className="text-orange-800 text-xl" style={{fontFamily: 'Comic Sans MS, cursive'}}>✍️ Reflections</CardTitle>
+                  <CardTitle className="text-gray-800 text-xl">Reflections</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 text-center leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-                    Pause and reflect on God's goodness! 🌟 Guided questions and personal insights 💭
+                  <p className="text-gray-600 text-center leading-relaxed">
+                    Pause and reflect on God's goodness. Guided questions and personal insights
                   </p>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="text-center bg-gradient-to-r from-pink-100 via-yellow-100 to-green-100 p-8 rounded-3xl border-4 border-pink-200 shadow-xl">
-              <blockquote className="text-2xl italic text-gray-800 mb-4 leading-relaxed" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-                "Unless a grain of wheat falls to the ground and dies, it remains only a single seed. But if it dies, it produces many seeds." 🌾
+            <div className="text-center bg-gradient-to-r from-pink-50 via-white to-green-50 p-8 rounded-xl border border-pink-200 shadow-lg">
+              <blockquote className="text-2xl italic text-gray-800 mb-4 leading-relaxed">
+                "Unless a grain of wheat falls to the ground and dies, it remains only a single seed. But if it dies, it produces many seeds."
               </blockquote>
-              <cite className="text-xl text-pink-700 font-bold" style={{fontFamily: 'Comic Sans MS, cursive'}}>✨ John 12:24 ✨</cite>
+              <cite className="text-xl bg-gradient-to-r from-pink-600 to-green-600 bg-clip-text text-transparent font-semibold">
+                John 12:24
+              </cite>
             </div>
           </div>
         </div>
@@ -128,7 +130,7 @@ const Index = () => {
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-yellow-50 to-green-50">
+      <div className="min-h-screen bg-gradient-to-br from-white via-pink-50 to-green-50">
         <Navigation 
           activeSection={activeSection} 
           setActiveSection={setActiveSection}
@@ -137,16 +139,16 @@ const Index = () => {
         
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold text-pink-800 mb-2" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-              {getGreeting()}, Sweet Child of God! 🌸
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-pink-600 to-green-600 bg-clip-text text-transparent mb-2">
+              {getGreeting()}, Child of God!
             </h1>
-            <p className="text-gray-600 text-lg" style={{fontFamily: 'Comic Sans MS, cursive'}}>
-              ✨ {currentTime.toLocaleDateString('en-US', { 
+            <p className="text-gray-600 text-lg">
+              {currentTime.toLocaleDateString('en-US', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
-              })} ✨
+              })}
             </p>
           </div>
 
