@@ -2,18 +2,18 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CheckCircle, Clock, Heart } from 'lucide-react';
+import { Plus, Heart, Check, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface Prayer {
   id: number;
   title: string;
   content: string;
-  category: string;
   isAnswered: boolean;
+  category: string;
   createdAt: Date;
   answeredAt?: Date;
 }
@@ -22,33 +22,24 @@ const PrayerJournal = () => {
   const [prayers, setPrayers] = useState<Prayer[]>([
     {
       id: 1,
-      title: "Guidance for Career Decision",
-      content: "Lord, please give me wisdom and clarity as I consider this new job opportunity. Help me discern your will for my life.",
-      category: "Guidance",
+      title: "Health and Healing",
+      content: "Lord, please watch over my family's health and grant healing where it's needed. Give us strength during this time.",
       isAnswered: false,
-      createdAt: new Date(2024, 0, 1)
-    },
-    {
-      id: 2,
-      title: "Healing for Mom",
-      content: "Father, I pray for complete healing for my mother's health issues. Give the doctors wisdom and surround her with your peace.",
-      category: "Healing",
-      isAnswered: true,
-      createdAt: new Date(2024, 0, 15),
-      answeredAt: new Date(2024, 1, 10)
+      category: "Health",
+      createdAt: new Date(2024, 0, 15)
     }
   ]);
 
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [showNewPrayer, setShowNewPrayer] = useState(false);
   const [newPrayer, setNewPrayer] = useState({
     title: '',
     content: '',
-    category: 'General'
+    category: 'Personal'
   });
 
   const { toast } = useToast();
 
-  const categories = ['General', 'Healing', 'Guidance', 'Family', 'Work', 'Gratitude', 'Forgiveness'];
+  const categories = ['Personal', 'Family', 'Health', 'Work', 'Ministry', 'Others'];
 
   const addPrayer = () => {
     if (!newPrayer.title.trim() || !newPrayer.content.trim()) {
@@ -70,11 +61,11 @@ const PrayerJournal = () => {
     };
 
     setPrayers([prayer, ...prayers]);
-    setNewPrayer({ title: '', content: '', category: 'General' });
-    setShowAddForm(false);
-    
+    setNewPrayer({ title: '', content: '', category: 'Personal' });
+    setShowNewPrayer(false);
+
     toast({
-      title: "Prayer added",
+      title: "Prayer added! 🙏",
       description: "Your prayer has been added to your journal",
     });
   };
@@ -85,25 +76,25 @@ const PrayerJournal = () => {
         ? { ...prayer, isAnswered: true, answeredAt: new Date() }
         : prayer
     ));
-    
+
     toast({
-      title: "Praise God! 🙏",
-      description: "Prayer marked as answered. What a blessing!",
+      title: "Praise God! 🎉",
+      description: "Prayer marked as answered. Give thanks to the Lord!",
     });
   };
 
-  const activePrayers = prayers.filter(p => !p.isAnswered);
   const answeredPrayers = prayers.filter(p => p.isAnswered);
+  const activePrayers = prayers.filter(p => !p.isAnswered);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-3xl font-bold text-green-800">Prayer Journal</h2>
-          <p className="text-gray-600 mt-2">Cast all your anxiety on him because he cares for you. - 1 Peter 5:7</p>
+          <p className="text-gray-600 mt-2">Do not be anxious about anything, but in every situation, by prayer and petition, with thanksgiving, present your requests to God. - Philippians 4:6</p>
         </div>
         <Button
-          onClick={() => setShowAddForm(true)}
+          onClick={() => setShowNewPrayer(true)}
           className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
         >
           <Plus className="w-4 h-4 mr-2" />
@@ -111,10 +102,13 @@ const PrayerJournal = () => {
         </Button>
       </div>
 
-      {showAddForm && (
-        <Card className="border-2 border-purple-200 shadow-lg">
+      {showNewPrayer && (
+        <Card className="border-2 border-purple-200 shadow-lg bg-gradient-to-br from-purple-50 to-pink-50">
           <CardHeader>
-            <CardTitle className="text-purple-800">Add New Prayer</CardTitle>
+            <CardTitle className="text-purple-800 flex items-center">
+              <Heart className="w-6 h-6 mr-2" />
+              Add New Prayer
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -122,35 +116,38 @@ const PrayerJournal = () => {
               <Input
                 value={newPrayer.title}
                 onChange={(e) => setNewPrayer({...newPrayer, title: e.target.value})}
-                placeholder="What are you praying about?"
+                placeholder="What are you praying for?"
                 className="border-purple-200 focus:border-purple-400"
               />
             </div>
+
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
               <select
                 value={newPrayer.category}
                 onChange={(e) => setNewPrayer({...newPrayer, category: e.target.value})}
-                className="w-full px-3 py-2 border border-purple-200 rounded-md focus:outline-none focus:border-purple-400"
+                className="w-full px-3 py-2 border border-purple-200 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400"
               >
-                {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
                 ))}
               </select>
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Prayer</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Your Prayer</label>
               <Textarea
                 value={newPrayer.content}
                 onChange={(e) => setNewPrayer({...newPrayer, content: e.target.value})}
                 placeholder="Pour out your heart to God..."
-                rows={4}
+                rows={6}
                 className="border-purple-200 focus:border-purple-400"
               />
             </div>
+
             <div className="flex justify-end space-x-3">
               <Button
-                onClick={() => setShowAddForm(false)}
+                onClick={() => setShowNewPrayer(false)}
                 variant="outline"
               >
                 Cancel
@@ -166,83 +163,92 @@ const PrayerJournal = () => {
         </Card>
       )}
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Active Prayers */}
+      <div className="grid md:grid-cols-2 gap-8">
         <div>
-          <div className="flex items-center space-x-2 mb-4">
-            <Clock className="w-5 h-5 text-amber-600" />
-            <h3 className="text-xl font-semibold text-gray-800">Active Prayers ({activePrayers.length})</h3>
-          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <Clock className="w-5 h-5 mr-2 text-purple-600" />
+            Active Prayers ({activePrayers.length})
+          </h3>
           <div className="space-y-4">
             {activePrayers.map(prayer => (
-              <Card key={prayer.id} className="border-amber-200 bg-amber-50/50">
+              <Card key={prayer.id} className="border-purple-200 bg-gradient-to-br from-purple-50 to-blue-50">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg text-gray-800">{prayer.title}</CardTitle>
-                    <Badge variant="secondary" className="bg-amber-100 text-amber-800">
-                      {prayer.category}
-                    </Badge>
+                    <div>
+                      <CardTitle className="text-lg text-gray-800">{prayer.title}</CardTitle>
+                      <Badge variant="outline" className="mt-2 bg-white/70">
+                        {prayer.category}
+                      </Badge>
+                    </div>
+                    <span className="text-sm text-gray-500">
+                      {prayer.createdAt.toLocaleDateString()}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-500">
-                    {prayer.createdAt.toLocaleDateString()}
-                  </p>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700 mb-4">{prayer.content}</p>
+                  <div className="bg-white/70 p-4 rounded-lg border border-purple-200 mb-4">
+                    <p className="text-gray-700 italic leading-relaxed">{prayer.content}</p>
+                  </div>
                   <Button
                     onClick={() => markAsAnswered(prayer.id)}
                     size="sm"
                     className="bg-green-600 hover:bg-green-700"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <Check className="w-4 h-4 mr-2" />
                     Mark as Answered
                   </Button>
                 </CardContent>
               </Card>
             ))}
+
             {activePrayers.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <Clock className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No active prayers. Click "New Prayer" to add one.</p>
+                <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No active prayers</p>
+                <p className="text-sm">Add a prayer to begin your journey</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Answered Prayers */}
         <div>
-          <div className="flex items-center space-x-2 mb-4">
-            <Heart className="w-5 h-5 text-green-600" />
-            <h3 className="text-xl font-semibold text-gray-800">Answered Prayers ({answeredPrayers.length})</h3>
-          </div>
+          <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
+            <Check className="w-5 h-5 mr-2 text-green-600" />
+            Answered Prayers ({answeredPrayers.length})
+          </h3>
           <div className="space-y-4">
             {answeredPrayers.map(prayer => (
-              <Card key={prayer.id} className="border-green-200 bg-green-50/50">
+              <Card key={prayer.id} className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-50">
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
-                    <CardTitle className="text-lg text-gray-800">{prayer.title}</CardTitle>
-                    <Badge variant="secondary" className="bg-green-100 text-green-800">
-                      {prayer.category}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>Prayed: {prayer.createdAt.toLocaleDateString()}</span>
-                    <span>Answered: {prayer.answeredAt?.toLocaleDateString()}</span>
+                    <div>
+                      <CardTitle className="text-lg text-gray-800 flex items-center">
+                        {prayer.title}
+                        <Check className="w-5 h-5 ml-2 text-green-600" />
+                      </CardTitle>
+                      <Badge variant="outline" className="mt-2 bg-white/70 border-green-300">
+                        {prayer.category}
+                      </Badge>
+                    </div>
+                    <div className="text-right text-sm text-gray-500">
+                      <div>Prayed: {prayer.createdAt.toLocaleDateString()}</div>
+                      <div>Answered: {prayer.answeredAt?.toLocaleDateString()}</div>
+                    </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-700">{prayer.content}</p>
-                  <div className="mt-3 flex items-center text-green-700">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    <span className="text-sm font-medium">Prayer Answered ✨</span>
+                  <div className="bg-white/70 p-4 rounded-lg border border-green-200">
+                    <p className="text-gray-700 italic leading-relaxed">{prayer.content}</p>
                   </div>
                 </CardContent>
               </Card>
             ))}
+
             {answeredPrayers.length === 0 && (
               <div className="text-center py-8 text-gray-500">
-                <Heart className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>Your answered prayers will appear here. Keep praying!</p>
+                <Check className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                <p>No answered prayers yet</p>
+                <p className="text-sm">Keep praying and watch God work!</p>
               </div>
             )}
           </div>
