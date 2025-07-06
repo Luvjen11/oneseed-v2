@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Seedling, Heart, BookOpen, PenTool, User, Sun, Moon } from 'lucide-react';
+import { Sprout, Heart, BookOpen, PenTool, User, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Navigation from '@/components/Navigation';
@@ -35,7 +34,7 @@ const Index = () => {
             <div className="text-center mb-12">
               <div className="flex justify-center items-center mb-6">
                 <div className="relative">
-                  <Seedling className="w-16 h-16 text-green-600" />
+                  <Sprout className="w-16 h-16 text-green-600" />
                   <div className="absolute -top-2 -right-2 w-6 h-6 bg-amber-200 rounded-full flex items-center justify-center">
                     <span className="text-xs">✝</span>
                   </div>

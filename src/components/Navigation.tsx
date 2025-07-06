@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Seedling, BookOpen, Heart, PenTool, LogOut } from 'lucide-react';
+import { Sprout, BookOpen, Heart, PenTool, LogOut } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -21,7 +21,7 @@ const Navigation = ({ activeSection, setActiveSection, onLogout }: NavigationPro
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Seedling className="w-8 h-8 text-green-600" />
+            <Sprout className="w-8 h-8 text-green-600" />
             <span className="text-xl font-bold text-green-800">OneSeed</span>
           </div>
           

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Seedling, X } from 'lucide-react';
+import { Sprout, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AuthModalProps {
@@ -67,7 +67,7 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
           </button>
           <div className="flex justify-center items-center mb-4">
             <div className="relative">
-              <Seedling className="w-12 h-12 text-green-600" />
+              <Sprout className="w-12 h-12 text-green-600" />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-200 rounded-full flex items-center justify-center">
                 <span className="text-xs">✝</span>
               </div>
