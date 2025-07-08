@@ -26,11 +26,12 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Simulate API call
     setTimeout(() => {
       if (!isLogin && formData.password !== formData.confirmPassword) {
         toast({
-          title: "Passwords don't match!",
-          description: "Please make sure your passwords match.",
+          title: "Passwords don't match",
+          description: "Please make sure your passwords match",
           variant: "destructive"
         });
         setIsLoading(false);
@@ -39,7 +40,7 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
 
       toast({
         title: isLogin ? "Welcome back!" : "Welcome to OneSeed!",
-        description: isLogin ? "You've successfully signed in!" : "Your account has been created!",
+        description: isLogin ? "You've successfully signed in" : "Your account has been created successfully",
       });
 
       setIsLoading(false);
@@ -55,29 +56,28 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
-      <Card className="w-full max-w-md border border-pink-200 shadow-2xl bg-white">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <Card className="w-full max-w-md border-0 shadow-2xl bg-gradient-to-br from-white via-green-50 to-amber-50">
         <CardHeader className="text-center relative">
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 text-gray-400 hover:text-pink-600 transform hover:scale-110 transition-all duration-300 bg-gray-100 rounded-full p-2"
+            className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
-          
           <div className="flex justify-center items-center mb-4">
-            <img 
-              src="/lovable-uploads/b7b57ebd-3dcb-418e-adf2-c5af277e3125.png" 
-              alt="OneSeed Logo" 
-              className="w-16 h-16 transform hover:scale-110 transition-transform duration-300"
-            />
+            <div className="relative">
+              <Sprout className="w-12 h-12 text-green-600" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-amber-200 rounded-full flex items-center justify-center">
+                <span className="text-xs">✝</span>
+              </div>
+            </div>
           </div>
-          
-          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-green-600 bg-clip-text text-transparent mb-2">
-            {isLogin ? 'Welcome Back!' : 'Join OneSeed!'}
+          <CardTitle className="text-2xl font-bold bg-gradient-to-r from-green-700 to-amber-700 bg-clip-text text-transparent">
+            {isLogin ? 'Welcome Back' : 'Join OneSeed'}
           </CardTitle>
-          <p className="text-gray-600">
-            {isLogin ? 'Continue your spiritual journey' : 'Begin your spiritual growth adventure'}
+          <p className="text-gray-600 mt-2">
+            {isLogin ? 'Continue your spiritual journey' : 'Begin your spiritual growth journey'}
           </p>
         </CardHeader>
 
@@ -85,21 +85,21 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                 <Input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  placeholder="Enter your name"
+                  placeholder="Enter your full name"
                   required={!isLogin}
-                  className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                  className="border-green-200 focus:border-green-400"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
               <Input
                 type="email"
                 name="email"
@@ -107,12 +107,12 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
                 onChange={handleInputChange}
                 placeholder="Enter your email"
                 required
-                className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                className="border-green-200 focus:border-green-400"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
               <Input
                 type="password"
                 name="password"
@@ -120,13 +120,13 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
                 onChange={handleInputChange}
                 placeholder="Enter your password"
                 required
-                className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                className="border-green-200 focus:border-green-400"
               />
             </div>
 
             {!isLogin && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
                 <Input
                   type="password"
                   name="confirmPassword"
@@ -134,7 +134,7 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
                   onChange={handleInputChange}
                   placeholder="Confirm your password"
                   required={!isLogin}
-                  className="border-gray-300 focus:border-pink-500 focus:ring-pink-500"
+                  className="border-green-200 focus:border-green-400"
                 />
               </div>
             )}
@@ -142,7 +142,7 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-pink-500 to-green-500 hover:from-pink-600 hover:to-green-600 text-white py-2 rounded-lg shadow-md transform hover:scale-105 transition-all duration-300"
+              className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-3"
             >
               {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Create Account')}
             </Button>
@@ -153,16 +153,16 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-pink-600 hover:text-pink-700 font-medium underline transform hover:scale-105 transition-all duration-300"
+                className="text-green-600 hover:text-green-700 font-medium"
               >
                 {isLogin ? 'Sign up' : 'Sign in'}
               </button>
             </p>
           </div>
 
-          <div className="mt-6 pt-4 border-t border-gray-200">
-            <p className="text-xs text-gray-500 text-center leading-relaxed">
-              By continuing, you agree to grow in faith and fellowship with God through OneSeed
+          <div className="mt-6 pt-4 border-t border-green-200">
+            <p className="text-xs text-gray-500 text-center">
+              By continuing, you agree to grow in faith and fellowship with God through OneSeed.
             </p>
           </div>
         </CardContent>
