@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Sprout, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 interface AuthModalProps {
   onClose: () => void;
@@ -26,8 +27,7 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
       if (!isLogin && formData.password !== formData.confirmPassword) {
         toast({
           title: "Passwords don't match",
@@ -38,14 +38,46 @@ const AuthModal = ({ onClose, onAuth }: AuthModalProps) => {
         return;
       }
 
+      if (isLogin) {
+        const { error } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (error) throw error;
+        toast({ title: 'Welcome back!', description: "You've successfully signed in" });
+        onAuth();
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+          options: {
+            data: { full_name: formData.name },
+          },
+        });
+        if (error) throw error;
+        // Auto-create profile row (best-effort; relies on RLS permitting insert)
+        const userId = data.user?.id;
+        if (userId) {
+          await supabase.from('faith_profiles').upsert({
+            user_id: userId,
+            full_name: formData.name || null,
+          }, { onConflict: 'user_id' });
+        }
+        toast({
+          title: 'Welcome to OneSeed!',
+          description: 'Please confirm your email if required and sign in if prompted.',
+        });
+        onAuth();
+      }
+    } catch (err: any) {
       toast({
-        title: isLogin ? "Welcome back!" : "Welcome to OneSeed!",
-        description: isLogin ? "You've successfully signed in" : "Your account has been created successfully",
+        title: 'Authentication failed',
+        description: err?.message || 'Please try again.',
+        variant: 'destructive',
       });
-
+    } finally {
       setIsLoading(false);
-      onAuth();
-    }, 1000);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

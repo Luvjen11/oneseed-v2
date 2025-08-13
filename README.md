@@ -60,6 +60,22 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Local development
+
+```bash
+npm i
+npm run dev
+```
+
+Create `.env.local` with your Supabase credentials:
+
+```
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_anon_key
+```
+
+Then run the SQL in `supabase/schema.sql` inside the Supabase SQL editor to provision tables and RLS policies.
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/535d1709-d0cc-4ea4-8ba6-30a740daac29) and click on Share -> Publish.

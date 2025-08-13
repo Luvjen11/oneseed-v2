@@ -4,66 +4,111 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Share2, BookmarkPlus, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import { fetchDailyVerse, getTranslationPreference, setTranslationPreference, TranslationOption } from '@/lib/verse';
 
 const DailyVerse = () => {
-  const [verse, setVerse] = useState({
-    text: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, to give you hope and a future.",
-    reference: "Jeremiah 29:11",
-    theme: "Hope & Future"
-  });
+  const [verse, setVerse] = useState({ text: '', reference: '', theme: '' });
   const [isFavorited, setIsFavorited] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [translation, setTranslation] = useState<TranslationOption>(getTranslationPreference());
 
-  const verses = [
-    {
-      text: "For I know the plans I have for you, declares the Lord, plans to prosper you and not to harm you, to give you hope and a future.",
-      reference: "Jeremiah 29:11",
-      theme: "Hope & Future"
-    },
-    {
-      text: "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
-      reference: "Proverbs 3:5-6",
-      theme: "Trust & Guidance"
-    },
-    {
-      text: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
-      reference: "Romans 8:28",
-      theme: "God's Purpose"
-    },
-    {
-      text: "Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.",
-      reference: "Joshua 1:9",
-      theme: "Courage & Strength"
-    },
-    {
-      text: "The Lord your God is with you, the Mighty Warrior who saves. He will take great delight in you; in his love he will no longer rebuke you, but will rejoice over you with singing.",
-      reference: "Zephaniah 3:17",
-      theme: "God's Love"
-    }
-  ];
+  useEffect(() => {
+    let ignore = false
+    ;(async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        const userId = sessionData.session?.user.id
+        if (userId) {
+          const { data } = await supabase
+            .from('faith_profiles')
+            .select('preferred_translation')
+            .eq('user_id', userId)
+            .single()
+          const pref = (data?.preferred_translation as TranslationOption | undefined)
+          if (pref === 'ourmanna' || pref === 'esv') {
+            setTranslationPreference(pref)
+            if (!ignore) setTranslation(pref)
+          }
+        }
+      } catch { /* ignore */ }
+      const v = await fetchDailyVerse()
+      if (!ignore) setVerse({ text: v.text, reference: v.reference, theme: v.theme || '' })
+    })()
+    return () => { ignore = true }
+  }, [])
 
-  const getNewVerse = () => {
+  useEffect(() => {
+    // When translation changes, re-fetch (using its own cache key)
+    let ignore = false
+    ;(async () => {
+      const v = await fetchDailyVerse()
+      if (!ignore) setVerse({ text: v.text, reference: v.reference, theme: v.theme || '' })
+    })()
+    return () => { ignore = true }
+  }, [translation])
+
+  const getNewVerse = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      const randomIndex = Math.floor(Math.random() * verses.length);
-      setVerse(verses[randomIndex]);
-      setIsLoading(false);
-      setIsFavorited(false);
-    }, 500);
+    try {
+      const v = await fetchDailyVerse({ bypassCache: true })
+      setVerse({ text: v.text, reference: v.reference, theme: v.theme || '' })
+      setIsFavorited(false)
+    } finally {
+      setIsLoading(false)
+    }
   };
 
-  const toggleFavorite = () => {
+  const onChangeTranslation = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const next = (e.target.value as TranslationOption)
+    setTranslationPreference(next)
+    setTranslation(next)
+    ;(async () => {
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        const userId = sessionData.session?.user.id
+        if (!userId) return
+        await supabase
+          .from('faith_profiles')
+          .upsert({ user_id: userId, preferred_translation: next }, { onConflict: 'user_id' })
+      } catch { /* ignore */ }
+    })()
+  }
+
+  const toggleFavorite = async () => {
     setIsFavorited(!isFavorited);
-    toast({
-      title: isFavorited ? "Removed from favorites" : "Added to favorites",
-      description: isFavorited ? "Verse removed from your favorites" : "Verse saved to your favorites",
-    });
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (!userId) return;
+
+      if (!isFavorited) {
+        await supabase.from('faith_verses').insert({
+          user_id: userId,
+          text: verse.text,
+          reference: verse.reference,
+          theme: verse.theme,
+        });
+      } else {
+        // Optimistic remove: delete matching verse rows
+        await supabase
+          .from('faith_verses')
+          .delete()
+          .match({ user_id: userId, text: verse.text, reference: verse.reference });
+      }
+      toast({
+        title: !isFavorited ? 'Added to favorites' : 'Removed from favorites',
+        description: !isFavorited ? 'Verse saved to your favorites' : 'Verse removed from your favorites',
+      });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.message || 'Failed to update favorites', variant: 'destructive' });
+    }
   };
 
-  const shareVerse = () => {
+  const shareVerse = async () => {
     if (navigator.share) {
-      navigator.share({
+      await navigator.share({
         title: 'Daily Verse from OneSeed',
         text: `"${verse.text}" - ${verse.reference}`,
       });
@@ -73,6 +118,21 @@ const DailyVerse = () => {
         title: "Verse copied!",
         description: "The verse has been copied to your clipboard",
       });
+    }
+
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (!userId) return;
+      await supabase.from('faith_verses').upsert({
+        user_id: userId,
+        text: verse.text,
+        reference: verse.reference,
+        theme: verse.theme,
+        shared_count: 1,
+      }, { onConflict: 'user_id,reference' });
+    } catch (_) {
+      // ignore
     }
   };
 
@@ -91,13 +151,41 @@ const DailyVerse = () => {
         </CardHeader>
         
         <CardContent className="text-center space-y-6">
+          <div className="flex justify-center">
+            <select
+              value={translation}
+              onChange={onChangeTranslation}
+              className="text-sm border rounded-md px-3 py-1 bg-white/90"
+            >
+              <option value="ourmanna">Default (OurManna)</option>
+              <option value="esv">ESV (requires API key)</option>
+            </select>
+          </div>
+
           <blockquote className="text-2xl md:text-3xl font-serif italic text-gray-800 leading-relaxed">
             "{verse.text}"
           </blockquote>
           
-          <cite className="text-xl font-semibold text-green-700 not-italic">
-            — {verse.reference}
-          </cite>
+          <div className="space-y-1">
+            <cite className="block text-xl font-semibold text-green-700 not-italic">
+              — {verse.reference}
+            </cite>
+            {(verse as any).version || (verse as any).source ? (
+              <p className="text-sm text-gray-500">
+                {(verse as any).version ? `Version: ${(verse as any).version}` : ''}
+                {(verse as any).version && (verse as any).source ? ' • ' : ''}
+                {(verse as any).source ? (
+                  (verse as any).sourceUrl ? (
+                    <a className="underline hover:text-gray-700" href={(verse as any).sourceUrl} target="_blank" rel="noreferrer">
+                      {(verse as any).source}
+                    </a>
+                  ) : (
+                    (verse as any).source
+                  )
+                ) : null}
+              </p>
+            ) : null}
+          </div>
           
           <div className="flex justify-center space-x-4 pt-6">
             <Button

@@ -7,6 +7,7 @@ import DailyVerse from '@/components/DailyVerse';
 import PrayerJournal from '@/components/PrayerJournal';
 import Reflections from '@/components/Reflections';
 import AuthModal from '@/components/AuthModal';
+import { supabase } from '@/lib/supabase';
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -17,6 +18,24 @@ const Index = () => {
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    // Load session on mount and subscribe to auth state
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      setIsAuthenticated(!!data.session);
+    };
+    init();
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+      if (session) setShowAuthModal(false);
+    });
+
+    return () => {
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   const getGreeting = () => {
@@ -115,7 +134,10 @@ const Index = () => {
         <Navigation 
           activeSection={activeSection} 
           setActiveSection={setActiveSection}
-          onLogout={() => setIsAuthenticated(false)}
+          onLogout={async () => {
+            await supabase.auth.signOut();
+            setIsAuthenticated(false);
+          }}
         />
         
         <div className="container mx-auto px-4 py-8">

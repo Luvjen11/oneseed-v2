@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,28 +7,20 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Heart, Check, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 interface Prayer {
-  id: number;
+  id: string;
   title: string;
   content: string;
   isAnswered: boolean;
   category: string;
-  createdAt: Date;
-  answeredAt?: Date;
+  createdAt: string;
+  answeredAt?: string;
 }
 
 const PrayerJournal = () => {
-  const [prayers, setPrayers] = useState<Prayer[]>([
-    {
-      id: 1,
-      title: "Health and Healing",
-      content: "Lord, please watch over my family's health and grant healing where it's needed. Give us strength during this time.",
-      isAnswered: false,
-      category: "Health",
-      createdAt: new Date(2024, 0, 15)
-    }
-  ]);
+  const [prayers, setPrayers] = useState<Prayer[]>([]);
 
   const [showNewPrayer, setShowNewPrayer] = useState(false);
   const [newPrayer, setNewPrayer] = useState({
@@ -41,7 +33,7 @@ const PrayerJournal = () => {
 
   const categories = ['Personal', 'Family', 'Health', 'Work', 'Ministry', 'Others'];
 
-  const addPrayer = () => {
+  const addPrayer = async () => {
     if (!newPrayer.title.trim() || !newPrayer.content.trim()) {
       toast({
         title: "Please fill in all fields",
@@ -51,37 +43,123 @@ const PrayerJournal = () => {
       return;
     }
 
-    const prayer: Prayer = {
-      id: Date.now(),
-      title: newPrayer.title,
-      content: newPrayer.content,
-      category: newPrayer.category,
-      isAnswered: false,
-      createdAt: new Date()
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (!userId) {
+        toast({ title: 'Please sign in', description: 'You must be signed in to add prayers.' });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('faith_prayers')
+        .insert({
+          user_id: userId,
+          title: newPrayer.title,
+          content: newPrayer.content,
+          category: newPrayer.category,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+
+      setPrayers(prev => [{
+        id: data.id,
+        title: data.title,
+        content: data.content,
+        category: data.category,
+        isAnswered: data.is_answered,
+        createdAt: data.created_at,
+        answeredAt: data.answered_at || undefined,
+      }, ...prev]);
+      setNewPrayer({ title: '', content: '', category: 'Personal' });
+      setShowNewPrayer(false);
+      toast({ title: "Prayer added! 🙏", description: "Your prayer has been added to your journal" });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.message || 'Failed to add prayer', variant: 'destructive' });
+    }
+  };
+
+  const markAsAnswered = async (id: string) => {
+    try {
+      const { error, data } = await supabase
+        .from('faith_prayers')
+        .update({ is_answered: true, answered_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
+        .single();
+      if (error) throw error;
+
+      setPrayers(prev => prev.map(prayer =>
+        prayer.id === id
+          ? { ...prayer, isAnswered: true, answeredAt: data.answered_at }
+          : prayer
+      ));
+
+      toast({ title: "Praise God! 🎉", description: "Prayer marked as answered. Give thanks to the Lord!" });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.message || 'Failed to update prayer', variant: 'destructive' });
+    }
+  };
+
+  useEffect(() => {
+    const fetchPrayers = async () => {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (!userId) return;
+      const { data, error } = await supabase
+        .from('faith_prayers')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) return;
+      setPrayers(
+        (data || []).map((p: any) => ({
+          id: p.id,
+          title: p.title,
+          content: p.content,
+          category: p.category,
+          isAnswered: p.is_answered,
+          createdAt: p.created_at,
+          answeredAt: p.answered_at || undefined,
+        }))
+      );
     };
+    fetchPrayers();
 
-    setPrayers([prayer, ...prayers]);
-    setNewPrayer({ title: '', content: '', category: 'Personal' });
-    setShowNewPrayer(false);
+    const channel = supabase
+      .channel('faith_prayers_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'faith_prayers' }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          const p: any = payload.new;
+          setPrayers(prev => [{
+            id: p.id,
+            title: p.title,
+            content: p.content,
+            category: p.category,
+            isAnswered: p.is_answered,
+            createdAt: p.created_at,
+            answeredAt: p.answered_at || undefined,
+          }, ...prev]);
+        }
+        if (payload.eventType === 'UPDATE') {
+          const p: any = payload.new;
+          setPrayers(prev => prev.map(x => x.id === p.id ? {
+            id: p.id,
+            title: p.title,
+            content: p.content,
+            category: p.category,
+            isAnswered: p.is_answered,
+            createdAt: p.created_at,
+            answeredAt: p.answered_at || undefined,
+          } : x));
+        }
+      })
+      .subscribe();
 
-    toast({
-      title: "Prayer added! 🙏",
-      description: "Your prayer has been added to your journal",
-    });
-  };
-
-  const markAsAnswered = (id: number) => {
-    setPrayers(prayers.map(prayer => 
-      prayer.id === id 
-        ? { ...prayer, isAnswered: true, answeredAt: new Date() }
-        : prayer
-    ));
-
-    toast({
-      title: "Praise God! 🎉",
-      description: "Prayer marked as answered. Give thanks to the Lord!",
-    });
-  };
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   const answeredPrayers = prayers.filter(p => p.isAnswered);
   const activePrayers = prayers.filter(p => !p.isAnswered);
@@ -181,7 +259,7 @@ const PrayerJournal = () => {
                       </Badge>
                     </div>
                     <span className="text-sm text-gray-500">
-                      {prayer.createdAt.toLocaleDateString()}
+                      {new Date(prayer.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </CardHeader>
@@ -231,8 +309,8 @@ const PrayerJournal = () => {
                       </Badge>
                     </div>
                     <div className="text-right text-sm text-gray-500">
-                      <div>Prayed: {prayer.createdAt.toLocaleDateString()}</div>
-                      <div>Answered: {prayer.answeredAt?.toLocaleDateString()}</div>
+                       <div>Prayed: {new Date(prayer.createdAt).toLocaleDateString()}</div>
+                       <div>Answered: {prayer.answeredAt ? new Date(prayer.answeredAt).toLocaleDateString() : ''}</div>
                     </div>
                   </div>
                 </CardHeader>

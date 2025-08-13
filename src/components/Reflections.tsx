@@ -1,30 +1,23 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Plus, PenTool, Sparkles } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 interface Reflection {
-  id: number;
+  id: string;
   question: string;
   response: string;
   tags: string[];
-  createdAt: Date;
+  createdAt: string;
 }
 
 const Reflections = () => {
-  const [reflections, setReflections] = useState<Reflection[]>([
-    {
-      id: 1,
-      question: "What are three things you're grateful for today?",
-      response: "I'm grateful for my family's health, the beautiful sunrise this morning, and the opportunity to grow closer to God through His word.",
-      tags: ['Gratitude', 'Family'],
-      createdAt: new Date(2024, 0, 20)
-    }
-  ]);
+  const [reflections, setReflections] = useState<Reflection[]>([]);
 
   const [currentQuestion, setCurrentQuestion] = useState('');
   const [currentResponse, setCurrentResponse] = useState('');
@@ -56,7 +49,7 @@ const Reflections = () => {
     setShowNewReflection(true);
   };
 
-  const saveReflection = () => {
+  const saveReflection = async () => {
     if (!currentResponse.trim()) {
       toast({
         title: "Please write your reflection",
@@ -66,21 +59,38 @@ const Reflections = () => {
       return;
     }
 
-    const reflection: Reflection = {
-      id: Date.now(),
-      question: currentQuestion,
-      response: currentResponse,
-      tags: selectedTags,
-      createdAt: new Date()
-    };
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData.session?.user.id;
+      if (!userId) {
+        toast({ title: 'Please sign in', description: 'You must be signed in to save reflections.' });
+        return;
+      }
 
-    setReflections([reflection, ...reflections]);
-    setShowNewReflection(false);
-    
-    toast({
-      title: "Reflection saved! ✨",
-      description: "Your spiritual reflection has been added to your journal",
-    });
+      const { data, error } = await supabase
+        .from('faith_reflections')
+        .insert({
+          user_id: userId,
+          question: currentQuestion,
+          response: currentResponse,
+          tags: selectedTags,
+        })
+        .select()
+        .single();
+      if (error) throw error;
+
+      setReflections(prev => [{
+        id: data.id,
+        question: data.question,
+        response: data.response,
+        tags: data.tags || [],
+        createdAt: data.created_at,
+      }, ...prev]);
+      setShowNewReflection(false);
+      toast({ title: 'Reflection saved! ✨', description: 'Your spiritual reflection has been added to your journal' });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err?.message || 'Failed to save reflection', variant: 'destructive' });
+    }
   };
 
   const toggleTag = (tag: string) => {
@@ -184,7 +194,7 @@ const Reflections = () => {
                   {reflection.question}
                 </CardTitle>
                 <span className="text-sm text-gray-500 ml-4">
-                  {reflection.createdAt.toLocaleDateString()}
+                  {new Date(reflection.createdAt).toLocaleDateString()}
                 </span>
               </div>
               {reflection.tags.length > 0 && (
