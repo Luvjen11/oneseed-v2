@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Heart, Share2, BookmarkPlus, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
+import { getVerse } from '@/lib/verse-api';
 import { fetchDailyVerse, getTranslationPreference, setTranslationPreference, TranslationOption } from '@/lib/verse';
 
 const DailyVerse = () => {
@@ -52,8 +53,15 @@ const DailyVerse = () => {
   const getNewVerse = async () => {
     setIsLoading(true);
     try {
-      const v = await fetchDailyVerse({ bypassCache: true })
-      setVerse({ text: v.text, reference: v.reference, theme: v.theme || '' })
+      // Try new Edge Function API first, fallback to existing
+      try {
+        const v = await getVerse(); // random verse from Edge Function
+        setVerse({ text: v.text, reference: v.reference, theme: 'Random Verse' })
+      } catch {
+        // Fallback to existing implementation
+        const v = await fetchDailyVerse({ bypassCache: true })
+        setVerse({ text: v.text, reference: v.reference, theme: v.theme || '' })
+      }
       setIsFavorited(false)
     } finally {
       setIsLoading(false)
