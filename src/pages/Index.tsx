@@ -7,6 +7,7 @@ import DailyVerse from '@/components/DailyVerse';
 import PrayerJournal from '@/components/PrayerJournal';
 import Reflections from '@/components/Reflections';
 import AuthModal from '@/components/AuthModal';
+import Favorites from '@/pages/Favorites';
 import { supabase } from '@/lib/supabase';
 
 const Index = () => {
@@ -156,6 +157,7 @@ const Index = () => {
           </div>
 
           {activeSection === 'home' && <DailyVerse />}
+          {activeSection === 'favorites' && <Favorites />}
           {activeSection === 'prayer' && <PrayerJournal />}
           {activeSection === 'reflections' && <Reflections />}
         </div>

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Sprout, BookOpen, Heart, PenTool, LogOut } from 'lucide-react';
+import { Sprout, BookOpen, Heart, PenTool, LogOut, Bookmark } from 'lucide-react';
 
 interface NavigationProps {
   activeSection: string;
@@ -12,6 +12,7 @@ interface NavigationProps {
 const Navigation = ({ activeSection, setActiveSection, onLogout }: NavigationProps) => {
   const navItems = [
     { id: 'home', label: 'Daily Verse', icon: BookOpen },
+    { id: 'favorites', label: 'Saved', icon: Bookmark },
     { id: 'prayer', label: 'Prayer Journal', icon: Heart },
     { id: 'reflections', label: 'Reflections', icon: PenTool },
   ];
