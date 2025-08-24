@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/((?!bible/|icons/|assets/|manifest.webmanifest|sw.js|workbox-).*)",
+      "source": "/((?!bible/|icons/|assets/|manifest.webmanifest|sw.js|workbox-|.*\\.(json|png|jpg|jpeg|gif|ico|css|js)).*)",
       "destination": "/index.html"
     }
   ],
