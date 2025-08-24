@@ -1,9 +1,7 @@
 {
   "rewrites": [
-    {
-      "source": "/((?!bible/|icons/|assets/|manifest.webmanifest|sw.js|workbox-|.*\\.(json|png|jpg|jpeg|gif|ico|css|js)).*)",
-      "destination": "/index.html"
-    }
+    { "source": "/bible/web/:path*.json", "destination": "/bible/web/:path*.json" },
+    { "source": "/(.*)", "destination": "/" }
   ],
   "headers": [
     {
@@ -43,10 +41,10 @@
       ]
     },
     {
-      "source": "/bible/(.*)",
+      "source": "/bible/web/:path*.json",
       "headers": [
         {
-          "key": "Cache-Control", 
+          "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
         }
       ]
